@@ -81,19 +81,17 @@ type managerImpl struct {
 }
 
 // NewManager returns a new node shutdown manager.
-func NewManager(getPodsFunc eviction.ActivePodsFunc, killPodFunc eviction.KillPodFunc, syncNodeStatus func(),
-	shutdownGracePeriodRequested, shutdownGracePeriodCriticalPods time.Duration,
-	podPriorityShutdownGracePeriod []kubeletconfig.PodPriorityShutdownGracePeriod,
-) (Manager, lifecycle.PodAdmitHandler) {
+func NewManager(conf *Config) (Manager, lifecycle.PodAdmitHandler) {
 	if !utilfeature.DefaultFeatureGate.Enabled(features.GracefulNodeShutdown) {
 		m := managerStub{}
 		return m, m
 	}
 
+	podPriorityShutdownGracePeriod := conf.PodPriorityShutdownGracePeriod
 	// Migration from the original configures
 	if !utilfeature.DefaultFeatureGate.Enabled(features.PodPriorityBasedGracefulShutdown) ||
 		len(podPriorityShutdownGracePeriod) == 0 {
-		podPriorityShutdownGracePeriod = migrateConfig(shutdownGracePeriodRequested, shutdownGracePeriodCriticalPods)
+		podPriorityShutdownGracePeriod = migrateConfig(conf.ShutdownGracePeriodRequested, conf.ShutdownGracePeriodCriticalPods)
 	}
 
 	// Disable if the configuration is empty
@@ -107,12 +105,15 @@ func NewManager(getPodsFunc eviction.ActivePodsFunc, killPodFunc eviction.KillPo
 		return podPriorityShutdownGracePeriod[i].Priority < podPriorityShutdownGracePeriod[j].Priority
 	})
 
+	if conf.Clock == nil {
+		conf.Clock = clock.RealClock{}
+	}
 	manager := &managerImpl{
-		getPods:                        getPodsFunc,
-		killPod:                        killPodFunc,
-		syncNodeStatus:                 syncNodeStatus,
+		getPods:                        conf.GetPodsFunc,
+		killPod:                        conf.KillPodFunc,
+		syncNodeStatus:                 conf.SyncNodeStatus,
 		podPriorityShutdownGracePeriod: podPriorityShutdownGracePeriod,
-		clock:                          clock.RealClock{},
+		clock:                          conf.Clock,
 	}
 	return manager, manager
 }

@@ -19,18 +19,11 @@ limitations under the License.
 package nodeshutdown
 
 import (
-	"time"
-
-	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
-	"k8s.io/kubernetes/pkg/kubelet/eviction"
 	"k8s.io/kubernetes/pkg/kubelet/lifecycle"
 )
 
 // NewManager returns a fake node shutdown manager for non linux platforms.
-func NewManager(getPodsFunc eviction.ActivePodsFunc, killPodFunc eviction.KillPodFunc, syncNodeStatus func(),
-	shutdownGracePeriodRequested, shutdownGracePeriodCriticalPods time.Duration,
-	podPriorityShutdownGracePeriod []kubeletconfig.PodPriorityShutdownGracePeriod,
-) (Manager, lifecycle.PodAdmitHandler) {
+func NewManager(conf *Config) (Manager, lifecycle.PodAdmitHandler) {
 	m := managerStub{}
 	return m, m
 }

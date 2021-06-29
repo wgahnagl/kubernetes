@@ -17,6 +17,11 @@ limitations under the License.
 package nodeshutdown
 
 import (
+	"time"
+
+	"k8s.io/apimachinery/pkg/util/clock"
+	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
+	"k8s.io/kubernetes/pkg/kubelet/eviction"
 	"k8s.io/kubernetes/pkg/kubelet/lifecycle"
 )
 
@@ -25,6 +30,17 @@ type Manager interface {
 	Admit(attrs *lifecycle.PodAdmitAttributes) lifecycle.PodAdmitResult
 	Start() error
 	ShutdownStatus() error
+}
+
+// Config represents Manager configuration
+type Config struct {
+	GetPodsFunc                     eviction.ActivePodsFunc
+	KillPodFunc                     eviction.KillPodFunc
+	SyncNodeStatus                  func()
+	ShutdownGracePeriodRequested    time.Duration
+	ShutdownGracePeriodCriticalPods time.Duration
+	PodPriorityShutdownGracePeriod  []kubeletconfig.PodPriorityShutdownGracePeriod
+	Clock                           clock.Clock
 }
 
 // managerStub is a fake node shutdown managerImpl .
