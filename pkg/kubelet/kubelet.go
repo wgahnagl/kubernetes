@@ -1183,7 +1183,7 @@ type Kubelet struct {
 	runtimeClassManager *runtimeclass.Manager
 
 	// Handles node shutdown events for the Node.
-	shutdownManager *nodeshutdown.Manager
+	shutdownManager nodeshutdown.Manager
 }
 
 // ListPodStats is delegated to StatsProvider, which implements stats.Provider interface

@@ -227,7 +227,7 @@ func TestManager(t *testing.T) {
 			defer featuregatetesting.SetFeatureGateDuringTest(t, utilfeature.DefaultFeatureGate, pkgfeatures.GracefulNodeShutdown, true)()
 
 			manager, _ := NewManager(activePodsFunc, killPodsFunc, func() {}, tc.shutdownGracePeriodRequested, tc.shutdownGracePeriodCriticalPods, nil)
-			manager.clock = clock.NewFakeClock(time.Now())
+			manager.(*managerImpl).clock = clock.NewFakeClock(time.Now())
 
 			err := manager.Start()
 			if tc.expectedError != nil {

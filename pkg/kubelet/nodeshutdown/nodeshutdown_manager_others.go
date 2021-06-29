@@ -26,29 +26,11 @@ import (
 	"k8s.io/kubernetes/pkg/kubelet/lifecycle"
 )
 
-// Manager is a fake node shutdown manager for non linux platforms.
-type Manager struct{}
-
 // NewManager returns a fake node shutdown manager for non linux platforms.
 func NewManager(getPodsFunc eviction.ActivePodsFunc, killPodFunc eviction.KillPodFunc, syncNodeStatus func(),
 	shutdownGracePeriodRequested, shutdownGracePeriodCriticalPods time.Duration,
 	podPriorityShutdownGracePeriod []kubeletconfig.PodPriorityShutdownGracePeriod,
-) (*Manager, lifecycle.PodAdmitHandler) {
-	m := &Manager{}
+) (Manager, lifecycle.PodAdmitHandler) {
+	m := managerStub{}
 	return m, m
-}
-
-// Admit returns a fake Pod admission which always returns true
-func (m *Manager) Admit(attrs *lifecycle.PodAdmitAttributes) lifecycle.PodAdmitResult {
-	return lifecycle.PodAdmitResult{Admit: true}
-}
-
-// Start is a no-op always returning nil for non linux platforms.
-func (m *Manager) Start() error {
-	return nil
-}
-
-// ShutdownStatus is a no-op always returning nil for non linux platforms.
-func (m *Manager) ShutdownStatus() error {
-	return nil
 }
