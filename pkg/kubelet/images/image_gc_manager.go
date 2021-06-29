@@ -347,6 +347,7 @@ func (im *realImageGCManager) freeSpace(bytesToFree int64, freeTime time.Time) (
 	for i := 0; i < len(allImages); i += 1 {
 		imagesMap[allImages[i].ID] = allImages[i]
 	}
+
 	// Get all images in eviction order.
 	images := make([]evictionInfo, 0, len(im.imageRecords))
 	for image, record := range im.imageRecords {

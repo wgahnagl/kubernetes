@@ -193,6 +193,25 @@ func TestDeleteUnusedImagesExemptSandboxImage(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestDeletePinnedImage(t *testing.T) {
+	manager, fakeRuntime, _ := newRealImageGCManager(ImageGCPolicy{})
+	fakeRuntime.ImageList = []container.Image{
+		{
+			ID:     sandboxImage,
+			Size:   1024,
+			Pinned: true,
+		},
+		{
+			ID:   sandboxImage,
+			Size: 1024,
+		},
+	}
+
+	err := manager.DeleteUnusedImages()
+	assert := assert.New(t)
+	assert.Len(fakeRuntime.ImageList, 2)
+	require.NoError(t, err)
+}
 func TestDetectImagesContainerStopped(t *testing.T) {
 	manager, fakeRuntime, _ := newRealImageGCManager(ImageGCPolicy{})
 	fakeRuntime.ImageList = []container.Image{
