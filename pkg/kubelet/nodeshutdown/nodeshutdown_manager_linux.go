@@ -76,8 +76,7 @@ type managerImpl struct {
 	nodeShuttingDownMutex sync.Mutex
 	nodeShuttingDownNow   bool
 
-	clock        clock.Clock
-	probeManager prober.Manager
+	clock clock.Clock
 }
 
 // NewManager returns a new node shutdown manager.
