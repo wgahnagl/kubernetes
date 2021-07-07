@@ -335,7 +335,13 @@ func migrateConfig(shutdownGracePeriodRequested, shutdownGracePeriodCriticalPods
 		return nil
 	}
 	defaultPriority := shutdownGracePeriodRequested - shutdownGracePeriodCriticalPods
+	if defaultPriority < 0 {
+		return nil
+	}
 	criticalPriority := shutdownGracePeriodRequested - defaultPriority
+	if criticalPriority < 0 {
+		return nil
+	}
 	return []kubeletconfig.PodPriorityShutdownGracePeriod{
 		{
 			Priority:                   scheduling.DefaultPriorityWhenNoDefaultClassExists,

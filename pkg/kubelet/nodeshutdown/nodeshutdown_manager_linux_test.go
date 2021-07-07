@@ -416,6 +416,22 @@ func Test_migrateConfig(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "empty configuration",
+			args: shutdownConfig{
+				shutdownGracePeriodRequested:    0 * time.Second,
+				shutdownGracePeriodCriticalPods: 0 * time.Second,
+			},
+			want: nil,
+		},
+		{
+			name: "wrong configuration",
+			args: shutdownConfig{
+				shutdownGracePeriodRequested:    1 * time.Second,
+				shutdownGracePeriodCriticalPods: 100 * time.Second,
+			},
+			want: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
